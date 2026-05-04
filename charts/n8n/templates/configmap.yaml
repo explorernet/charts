@@ -22,6 +22,7 @@ data:
   N8N_DEFAULT_LOCALE: {{ .Values.config.defaultLocale | quote }}
   N8N_DIAGNOSTICS_ENABLED: {{ .Values.config.diagnosticsEnabled | quote }}
   N8N_EDITOR_BASE_URL: {{ include "n8n.editorBaseUrl" . | quote }}
+  N8N_PROXY_HOPS: {{ .Values.config.proxyHops | quote }}
   N8N_EMAIL_MODE: {{ .Values.config.email.mode | quote }}
   N8N_SMTP_HOST: {{ .Values.config.email.smtpHost | quote }}
   N8N_SMTP_PORT: {{ .Values.config.email.smtpPort | quote }}
@@ -32,6 +33,7 @@ data:
   N8N_WORKFLOW_HISTORY_PRUNE_TIME: {{ .Values.config.workflowHistoryPruneTime | quote }}
   NODE_FUNCTION_ALLOW_BUILTIN: {{ .Values.config.nodeFunctionAllowBuiltin | quote }}
   NODE_FUNCTION_ALLOW_EXTERNAL: {{ .Values.config.nodeFunctionAllowExternal | quote }}
+  OFFLOAD_MANUAL_EXECUTIONS_TO_WORKERS: {{ .Values.config.offloadManualExecutionsToWorkers | quote }}
   QUEUE_BULL_REDIS_HOST: {{ (ternary (include "n8n.redisName" .) .Values.redis.externalHost .Values.redis.enabled) | quote }}
   QUEUE_BULL_REDIS_PORT: {{ (ternary .Values.config.queue.redisPort .Values.redis.externalPort .Values.redis.enabled) | quote }}
   QUEUE_HEALTH_CHECK_ACTIVE: {{ .Values.config.queue.healthCheckActive | quote }}

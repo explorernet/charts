@@ -3,7 +3,18 @@ entries:
   n8n:
   - apiVersion: v2
     appVersion: 2.19.2
-    created: "2026-05-04T14:32:18.374605-03:00"
+    created: "2026-05-04T15:01:49.562392-03:00"
+    description: Flexible workflow automation platform for technical teams
+    digest: 2ee15331995bc9ae2c70c22e918121b1b04e8fa37e119e427c20509cedbe985d
+    icon: https://n8n.io/favicon.ico
+    name: n8n
+    type: application
+    urls:
+    - https://explorernet.github.io/charts/n8n-0.1.3.tgz
+    version: 0.1.3
+  - apiVersion: v2
+    appVersion: 2.19.2
+    created: "2026-05-04T15:01:49.562068-03:00"
     description: Flexible workflow automation platform for technical teams
     digest: da6dceb4e3c4b0cb514623451afd9d0767ef3dbf6e42f96030838ad4a09a6984
     icon: https://n8n.io/favicon.ico
@@ -12,4 +23,4 @@ entries:
     urls:
     - https://explorernet.github.io/charts/n8n-0.1.2.tgz
     version: 0.1.2
-generated: "2026-05-04T14:32:18.37379-03:00"
+generated: "2026-05-04T15:01:49.560968-03:00"

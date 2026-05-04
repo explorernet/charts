@@ -29,9 +29,11 @@ config:
     saveOnSuccess: none
     timeout: 180
   genericTimezone: America/Sao_Paulo
+  proxyHops: 1
   concurrencyProductionLimit: 8
   defaultLocale: pt
   diagnosticsEnabled: false
+  offloadManualExecutionsToWorkers: true
   email:
     mode: smtp
     smtpHost: smtp.gmail.com
