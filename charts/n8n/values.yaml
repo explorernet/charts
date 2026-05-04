@@ -6,6 +6,11 @@ image:
   tag: "2.19.2"
   pullPolicy: IfNotPresent
 
+secret:
+  dbPassword: ""
+  encryptionKey: ""
+  smtpPass: ""
+
 podAnnotations: {}
 
 config:
@@ -31,9 +36,9 @@ config:
     mode: smtp
     smtpHost: smtp.gmail.com
     smtpPort: 465
-    smtpSender: ""
+    smtpSender: "noreply@explorernet.com.br"
     smtpSsl: true
-    smtpUser: ""
+    smtpUser: "noreply@explorernet.com.br"
   templatesEnabled: true
   workflowHistoryPruneTime: 10
   nodeFunctionAllowBuiltin: "*"
@@ -43,11 +48,6 @@ config:
     redisHost: redis
     redisPort: 6379
   webhookUrl: ""
-
-secret:
-  dbPassword: ""
-  encryptionKey: ""
-  smtpPass: ""
 
 server:
   enabled: true
