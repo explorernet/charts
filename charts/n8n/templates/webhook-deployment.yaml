@@ -1,0 +1,54 @@
+{{- if .Values.webhook.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "n8n.webhookName" . }}
+  labels:
+    {{- include "n8n.labels" . | nindent 4 }}
+    app.kubernetes.io/component: webhook
+spec:
+  replicas: {{ .Values.webhook.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "n8n.componentLabels" (dict "context" . "component" "webhook") | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "n8n.componentLabels" (dict "context" . "component" "webhook") | nindent 8 }}
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    spec:
+      containers:
+        - name: webhook
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args:
+            {{- toYaml .Values.webhook.extraArgs | nindent 12 }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "n8n.envConfigName" . }}
+            - secretRef:
+                name: {{ include "n8n.envSecretName" . }}
+          ports:
+            - name: webhook
+              containerPort: {{ .Values.webhook.service.port }}
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.webhook.readinessProbe.path }}
+              port: {{ .Values.webhook.service.port }}
+            periodSeconds: {{ .Values.webhook.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.webhook.readinessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.webhook.readinessProbe.failureThreshold }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.webhook.livenessProbe.path }}
+              port: {{ .Values.webhook.service.port }}
+            periodSeconds: {{ .Values.webhook.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.webhook.livenessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.webhook.livenessProbe.failureThreshold }}
+          resources:
+            {{- toYaml .Values.webhook.resources | nindent 12 }}
+{{- end }}

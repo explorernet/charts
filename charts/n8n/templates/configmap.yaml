@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "n8n.envConfigName" . }}
+  labels:
+    {{- include "n8n.labels" . | nindent 4 }}
+data:
+  CREDENTIALS_DEFAULT_NAME: {{ .Values.config.credentialsDefaultName | quote }}
+  DB_POSTGRESDB_DATABASE: {{ .Values.config.db.database | quote }}
+  DB_POSTGRESDB_HOST: {{ .Values.config.db.host | quote }}
+  DB_POSTGRESDB_PORT: {{ .Values.config.db.port | quote }}
+  DB_POSTGRESDB_SCHEMA: {{ .Values.config.db.schema | quote }}
+  DB_POSTGRESDB_USER: {{ .Values.config.db.user | quote }}
+  DB_TYPE: {{ .Values.config.db.type | quote }}
+  EXECUTIONS_DATA_MAX_AGE: {{ .Values.config.executions.dataMaxAge | quote }}
+  EXECUTIONS_DATA_PRUNE_MAX_COUNT: {{ .Values.config.executions.pruneMaxCount | quote }}
+  EXECUTIONS_DATA_SAVE_ON_SUCCESS: {{ .Values.config.executions.saveOnSuccess | quote }}
+  EXECUTIONS_MODE: {{ .Values.config.executions.mode | quote }}
+  EXECUTIONS_TIMEOUT: {{ .Values.config.executions.timeout | quote }}
+  GENERIC_TIMEZONE: {{ .Values.config.genericTimezone | quote }}
+  N8N_CONCURRENCY_PRODUCTION_LIMIT: {{ .Values.config.concurrencyProductionLimit | quote }}
+  N8N_DEFAULT_LOCALE: {{ .Values.config.defaultLocale | quote }}
+  N8N_DIAGNOSTICS_ENABLED: {{ .Values.config.diagnosticsEnabled | quote }}
+  N8N_EDITOR_BASE_URL: {{ include "n8n.editorBaseUrl" . | quote }}
+  N8N_EMAIL_MODE: {{ .Values.config.email.mode | quote }}
+  N8N_SMTP_HOST: {{ .Values.config.email.smtpHost | quote }}
+  N8N_SMTP_PORT: {{ .Values.config.email.smtpPort | quote }}
+  N8N_SMTP_SENDER: {{ .Values.config.email.smtpSender | quote }}
+  N8N_SMTP_SSL: {{ .Values.config.email.smtpSsl | quote }}
+  N8N_SMTP_USER: {{ .Values.config.email.smtpUser | quote }}
+  N8N_TEMPLATES_ENABLED: {{ .Values.config.templatesEnabled | quote }}
+  N8N_WORKFLOW_HISTORY_PRUNE_TIME: {{ .Values.config.workflowHistoryPruneTime | quote }}
+  NODE_FUNCTION_ALLOW_BUILTIN: {{ .Values.config.nodeFunctionAllowBuiltin | quote }}
+  NODE_FUNCTION_ALLOW_EXTERNAL: {{ .Values.config.nodeFunctionAllowExternal | quote }}
+  QUEUE_BULL_REDIS_HOST: {{ (ternary (include "n8n.redisName" .) .Values.redis.externalHost .Values.redis.enabled) | quote }}
+  QUEUE_BULL_REDIS_PORT: {{ (ternary .Values.config.queue.redisPort .Values.redis.externalPort .Values.redis.enabled) | quote }}
+  QUEUE_HEALTH_CHECK_ACTIVE: {{ .Values.config.queue.healthCheckActive | quote }}
+  WEBHOOK_URL: {{ .Values.config.webhookUrl | quote }}

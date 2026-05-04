@@ -1,0 +1,162 @@
+nameOverride: ""
+fullnameOverride: ""
+
+image:
+  repository: n8nio/n8n
+  tag: "2.19.2"
+  pullPolicy: IfNotPresent
+
+podAnnotations: {}
+
+config:
+  credentialsDefaultName: "Minha credencial"
+  db:
+    type: postgresdb
+    host: ""
+    port: 5432
+    database: n8n
+    schema: public
+    user: postgres
+  executions:
+    mode: queue
+    dataMaxAge: 144
+    pruneMaxCount: 50000
+    saveOnSuccess: none
+    timeout: 180
+  genericTimezone: America/Sao_Paulo
+  concurrencyProductionLimit: 8
+  defaultLocale: pt
+  diagnosticsEnabled: false
+  email:
+    mode: smtp
+    smtpHost: smtp.gmail.com
+    smtpPort: 465
+    smtpSender: ""
+    smtpSsl: true
+    smtpUser: ""
+  templatesEnabled: true
+  workflowHistoryPruneTime: 10
+  nodeFunctionAllowBuiltin: "*"
+  nodeFunctionAllowExternal: "*"
+  queue:
+    healthCheckActive: true
+    redisHost: redis
+    redisPort: 6379
+  webhookUrl: ""
+
+secret:
+  dbPassword: ""
+  encryptionKey: ""
+  smtpPass: ""
+
+server:
+  enabled: true
+  replicaCount: 1
+  extraArgs: []
+  service:
+    port: 5678
+    type: ClusterIP
+  readinessProbe:
+    path: /healthz/readiness
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    timeoutSeconds: 1
+    failureThreshold: 3
+  livenessProbe:
+    path: /healthz/readiness
+    periodSeconds: 30
+    timeoutSeconds: 1
+    failureThreshold: 3
+  resources:
+    requests:
+      cpu: 200m
+      memory: 400Mi
+    limits:
+      cpu: 500m
+      memory: 600Mi
+
+webhook:
+  enabled: true
+  replicaCount: 1
+  extraArgs:
+    - webhook
+  service:
+    port: 5678
+    type: ClusterIP
+  readinessProbe:
+    path: /healthz/readiness
+    periodSeconds: 10
+    timeoutSeconds: 1
+    failureThreshold: 3
+  livenessProbe:
+    path: /healthz
+    periodSeconds: 30
+    timeoutSeconds: 1
+    failureThreshold: 3
+  resources:
+    requests:
+      cpu: 100m
+      memory: 400Mi
+    limits:
+      cpu: 300m
+      memory: 600Mi
+
+worker:
+  enabled: true
+  replicaCount: 4
+  extraArgs:
+    - worker
+  readinessProbe:
+    path: /healthz/readiness
+    periodSeconds: 10
+    timeoutSeconds: 1
+    failureThreshold: 3
+  livenessProbe:
+    path: /healthz
+    periodSeconds: 30
+    timeoutSeconds: 1
+    failureThreshold: 3
+  resources:
+    requests:
+      cpu: 100m
+      memory: 400Mi
+    limits:
+      cpu: 300m
+      memory: 600Mi
+
+persistence:
+  enabled: true
+  existingClaim: ""
+  accessModes:
+    - ReadWriteMany
+  size: 10Gi
+  storageClassName: nfs
+  mountPath: /home/node/.n8n
+
+redis:
+  enabled: true
+  externalHost: ""
+  externalPort: 6379
+  image:
+    repository: redis
+    tag: "8"
+    pullPolicy: IfNotPresent
+  replicaCount: 1
+  service:
+    port: 6379
+  resources:
+    requests:
+      cpu: 10m
+      memory: 50Mi
+    limits:
+      cpu: 50m
+      memory: 150Mi
+
+ingress:
+  enabled: true
+  className: traefik
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+  hosts:
+    - host: n8n.explorernet.com.br
+      tlsSecretName: n8n-tls
