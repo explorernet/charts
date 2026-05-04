@@ -37,4 +37,4 @@ data:
   QUEUE_BULL_REDIS_HOST: {{ (ternary (include "n8n.redisName" .) .Values.redis.externalHost .Values.redis.enabled) | quote }}
   QUEUE_BULL_REDIS_PORT: {{ (ternary .Values.config.queue.redisPort .Values.redis.externalPort .Values.redis.enabled) | quote }}
   QUEUE_HEALTH_CHECK_ACTIVE: {{ .Values.config.queue.healthCheckActive | quote }}
-  WEBHOOK_URL: {{ .Values.config.webhookUrl | quote }}
+  WEBHOOK_URL: {{ include "n8n.webhookUrl" . | quote }}

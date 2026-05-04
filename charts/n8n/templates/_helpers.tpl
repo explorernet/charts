@@ -67,3 +67,7 @@ app.kubernetes.io/component: {{ .component }}
 {{- define "n8n.editorBaseUrl" -}}
 {{- printf "https://%s" (index .Values.ingress.hosts 0).host -}}
 {{- end -}}
+
+{{- define "n8n.webhookUrl" -}}
+{{- printf "https://%s/" (index .Values.ingress.hosts 0).host -}}
+{{- end -}}

@@ -49,7 +49,6 @@ config:
     healthCheckActive: true
     redisHost: redis
     redisPort: 6379
-  webhookUrl: ""
 
 server:
   enabled: true
