@@ -36,9 +36,9 @@ config:
     mode: smtp
     smtpHost: smtp.gmail.com
     smtpPort: 465
-    smtpSender: "noreply@explorernet.com.br"
+    smtpSender: ""
     smtpSsl: true
-    smtpUser: "noreply@explorernet.com.br"
+    smtpUser: ""
   templatesEnabled: true
   workflowHistoryPruneTime: 10
   nodeFunctionAllowBuiltin: "*"
@@ -158,5 +158,5 @@ ingress:
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt
   hosts:
-    - host: n8n.explorernet.com.br
-      tlsSecretName: n8n-tls
+    - host: n8n.example.com
+      tlsSecretName: n8n-example-tls

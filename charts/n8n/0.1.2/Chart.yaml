@@ -2,6 +2,6 @@ apiVersion: v2
 name: n8n
 description: Flexible workflow automation platform for technical teams
 type: application
-version: 0.1.1
+version: 0.1.2
 appVersion: "2.19.2"
 icon: https://n8n.io/favicon.ico
