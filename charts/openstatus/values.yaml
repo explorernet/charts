@@ -1,0 +1,223 @@
+nameOverride: ""
+fullnameOverride: ""
+
+podAnnotations: {}
+
+secret:
+  databaseAuthToken: ""
+  upstashRedisRestToken: ""
+  qstashCurrentSigningKey: ""
+  qstashNextSigningKey: ""
+  qstashToken: ""
+  tinyBirdApiKey: ""
+  resendApiKey: ""
+  authSecret: ""
+  authGithubId: ""
+  authGithubSecret: ""
+  authGoogleId: ""
+  authGoogleSecret: ""
+  gcpClientEmail: ""
+  gcpPrivateKey: ""
+  cronSecret: ""
+  unkeyApiId: ""
+  unkeyToken: ""
+  superAdminToken: ""
+  stripeSecretKey: ""
+  stripeWebhookSecretKey: ""
+  projectIdVercel: ""
+  teamIdVercel: ""
+  vercelAuthBearerToken: ""
+  blobReadWriteToken: ""
+  sentryAuthToken: ""
+  openpanelClientSecret: ""
+  pagerdutyAppId: ""
+  slackSupportWebhookUrl: ""
+  telegramBotToken: ""
+  playgroundUnkeyApiKey: ""
+
+config:
+  nodeEnv: production
+  selfHost: "true"
+  qstashUrl: https://qstash.upstash.io/v1/publish/
+  gcpProjectId: ""
+  gcpLocation: ""
+  flyRegion: self-hosted
+  nextPublicStripePublishableKey: ""
+  nextPublicSentryDsn: ""
+  nextPublicOpenpanelClientId: ""
+  screenshotServiceUrl: ""
+  openstatusIngestUrl: ""
+  workspacesLookback30: ""
+  workspacesHideUrl: ""
+  turboEnvMode: loose
+  publicUrl: ""
+  upstashRedisRestUrl: ""
+  externalDatabaseUrl: ""
+  externalTinybirdUrl: ""
+
+libsql:
+  enabled: true
+  image:
+    repository: ghcr.io/tursodatabase/libsql-server
+    tag: latest
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 8080
+    hranaPort: 5001
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  persistence:
+    enabled: true
+    existingClaim: ""
+    accessModes:
+      - ReadWriteOnce
+    size: 10Gi
+    storageClassName: ""
+    mountPath: /var/lib/sqld
+
+tinybird:
+  enabled: true
+  image:
+    repository: tinybirdco/tinybird-local
+    tag: latest
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 7181
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+workflows:
+  enabled: true
+  image:
+    repository: ghcr.io/openstatushq/openstatus-workflows
+    tag: latest
+    pullPolicy: IfNotPresent
+  replicaCount: 1
+  service:
+    type: ClusterIP
+    port: 3000
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  persistence:
+    enabled: true
+    existingClaim: ""
+    accessModes:
+      - ReadWriteOnce
+    size: 5Gi
+    storageClassName: ""
+    mountPath: /app/data
+
+server:
+  enabled: true
+  image:
+    repository: ghcr.io/openstatushq/openstatus-server
+    tag: latest
+    pullPolicy: IfNotPresent
+  replicaCount: 1
+  service:
+    type: ClusterIP
+    port: 3000
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+privateLocation:
+  enabled: true
+  image:
+    repository: ghcr.io/openstatushq/openstatus-private-location
+    tag: latest
+    pullPolicy: IfNotPresent
+  replicaCount: 1
+  service:
+    type: ClusterIP
+    port: 8080
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 256Mi
+  ingress:
+    enabled: false
+    className: traefik
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt
+    hosts:
+      - host: ingest.example.com
+        tlsSecretName: ingest-example-tls
+
+dashboard:
+  enabled: true
+  image:
+    repository: ghcr.io/openstatushq/openstatus-dashboard
+    tag: latest
+    pullPolicy: IfNotPresent
+  replicaCount: 1
+  service:
+    type: ClusterIP
+    port: 3000
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+statusPage:
+  enabled: true
+  image:
+    repository: ghcr.io/openstatushq/openstatus-status-page
+    tag: latest
+    pullPolicy: IfNotPresent
+  replicaCount: 1
+  service:
+    type: ClusterIP
+    port: 3000
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+ingress:
+  dashboard:
+    enabled: true
+    className: traefik
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt
+    hosts:
+      - host: openstatus.example.com
+        tlsSecretName: openstatus-example-tls
+  statusPage:
+    enabled: true
+    className: traefik
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt
+    hosts:
+      - host: status.example.com
+        tlsSecretName: status-example-tls

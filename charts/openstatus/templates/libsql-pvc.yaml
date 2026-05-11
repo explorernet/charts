@@ -1,0 +1,17 @@
+{{- if and .Values.libsql.enabled .Values.libsql.persistence.enabled (not .Values.libsql.persistence.existingClaim) }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "openstatus.libsqlPvcName" . }}
+  labels:
+    {{- include "openstatus.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    {{- toYaml .Values.libsql.persistence.accessModes | nindent 4 }}
+  resources:
+    requests:
+      storage: {{ .Values.libsql.persistence.size }}
+  {{- if .Values.libsql.persistence.storageClassName }}
+  storageClassName: {{ .Values.libsql.persistence.storageClassName }}
+  {{- end }}
+{{- end }}

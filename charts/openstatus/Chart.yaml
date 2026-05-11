@@ -1,0 +1,7 @@
+apiVersion: v2
+name: openstatus
+description: Open-source status page and uptime monitoring platform
+type: application
+version: 0.1.0
+appVersion: "latest"
+icon: https://www.openstatus.dev/favicon.ico

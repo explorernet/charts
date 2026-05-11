@@ -13,4 +13,5 @@ helm repo update
 
 | Chart | Versão do chart | App version | Descrição |
 | --- | --- | --- | --- |
-| `n8n` | `0.1.2` | `2.19.2` | Flexible workflow automation platform for technical teams |
+| `n8n` | `0.1.4` | `2.19.2` | Flexible workflow automation platform for technical teams |
+| `openstatus` | `0.1.0` | `latest` | Open-source status page and uptime monitoring platform |

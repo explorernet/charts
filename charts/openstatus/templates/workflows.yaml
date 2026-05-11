@@ -1,0 +1,85 @@
+{{- if .Values.workflows.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "openstatus.workflowsName" . }}
+  labels:
+    {{- include "openstatus.labels" . | nindent 4 }}
+    app.kubernetes.io/component: workflows
+spec:
+  type: {{ .Values.workflows.service.type }}
+  ports:
+    - name: http
+      port: {{ .Values.workflows.service.port }}
+      targetPort: http
+      protocol: TCP
+  selector:
+    {{- include "openstatus.componentLabels" (dict "context" . "component" "workflows") | nindent 4 }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "openstatus.workflowsName" . }}
+  labels:
+    {{- include "openstatus.labels" . | nindent 4 }}
+    app.kubernetes.io/component: workflows
+spec:
+  replicas: {{ .Values.workflows.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "openstatus.componentLabels" (dict "context" . "component" "workflows") | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "openstatus.componentLabels" (dict "context" . "component" "workflows") | nindent 8 }}
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    spec:
+      containers:
+        - name: workflows
+          image: "{{ .Values.workflows.image.repository }}:{{ .Values.workflows.image.tag }}"
+          imagePullPolicy: {{ .Values.workflows.image.pullPolicy }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "openstatus.configName" . }}
+            - secretRef:
+                name: {{ include "openstatus.secretName" . }}
+          env:
+            - name: PORT
+              value: {{ .Values.workflows.service.port | quote }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.workflows.service.port }}
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /ping
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            timeoutSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /ping
+              port: http
+            initialDelaySeconds: 45
+            periodSeconds: 20
+            timeoutSeconds: 10
+            failureThreshold: 3
+          resources:
+            {{- toYaml .Values.workflows.resources | nindent 12 }}
+          {{- if .Values.workflows.persistence.enabled }}
+          volumeMounts:
+            - name: workflows-data
+              mountPath: {{ .Values.workflows.persistence.mountPath }}
+          {{- end }}
+      {{- if .Values.workflows.persistence.enabled }}
+      volumes:
+        - name: workflows-data
+          persistentVolumeClaim:
+            claimName: {{ include "openstatus.workflowsPvcName" . }}
+      {{- end }}
+{{- end }}

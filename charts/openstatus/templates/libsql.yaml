@@ -1,0 +1,85 @@
+{{- if .Values.libsql.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "openstatus.libsqlName" . }}
+  labels:
+    {{- include "openstatus.labels" . | nindent 4 }}
+    app.kubernetes.io/component: libsql
+spec:
+  type: {{ .Values.libsql.service.type }}
+  ports:
+    - name: http
+      port: {{ .Values.libsql.service.port }}
+      targetPort: http
+      protocol: TCP
+    - name: hrana
+      port: {{ .Values.libsql.service.hranaPort }}
+      targetPort: hrana
+      protocol: TCP
+  selector:
+    {{- include "openstatus.componentLabels" (dict "context" . "component" "libsql") | nindent 4 }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "openstatus.libsqlName" . }}
+  labels:
+    {{- include "openstatus.labels" . | nindent 4 }}
+    app.kubernetes.io/component: libsql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "openstatus.componentLabels" (dict "context" . "component" "libsql") | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "openstatus.componentLabels" (dict "context" . "component" "libsql") | nindent 8 }}
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    spec:
+      containers:
+        - name: libsql
+          image: "{{ .Values.libsql.image.repository }}:{{ .Values.libsql.image.tag }}"
+          imagePullPolicy: {{ .Values.libsql.image.pullPolicy }}
+          env:
+            - name: SQLD_NODE
+              value: primary
+          ports:
+            - name: http
+              containerPort: {{ .Values.libsql.service.port }}
+              protocol: TCP
+            - name: hrana
+              containerPort: {{ .Values.libsql.service.hranaPort }}
+              protocol: TCP
+          readinessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 5
+          livenessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 20
+            timeoutSeconds: 2
+            failureThreshold: 5
+          resources:
+            {{- toYaml .Values.libsql.resources | nindent 12 }}
+          {{- if .Values.libsql.persistence.enabled }}
+          volumeMounts:
+            - name: libsql-data
+              mountPath: {{ .Values.libsql.persistence.mountPath }}
+          {{- end }}
+      {{- if .Values.libsql.persistence.enabled }}
+      volumes:
+        - name: libsql-data
+          persistentVolumeClaim:
+            claimName: {{ include "openstatus.libsqlPvcName" . }}
+      {{- end }}
+{{- end }}

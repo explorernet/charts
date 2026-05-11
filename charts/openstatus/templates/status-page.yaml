@@ -1,0 +1,78 @@
+{{- if .Values.statusPage.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "openstatus.statusPageName" . }}
+  labels:
+    {{- include "openstatus.labels" . | nindent 4 }}
+    app.kubernetes.io/component: status-page
+spec:
+  type: {{ .Values.statusPage.service.type }}
+  ports:
+    - name: http
+      port: {{ .Values.statusPage.service.port }}
+      targetPort: http
+      protocol: TCP
+  selector:
+    {{- include "openstatus.componentLabels" (dict "context" . "component" "status-page") | nindent 4 }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "openstatus.statusPageName" . }}
+  labels:
+    {{- include "openstatus.labels" . | nindent 4 }}
+    app.kubernetes.io/component: status-page
+spec:
+  replicas: {{ .Values.statusPage.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "openstatus.componentLabels" (dict "context" . "component" "status-page") | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "openstatus.componentLabels" (dict "context" . "component" "status-page") | nindent 8 }}
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    spec:
+      containers:
+        - name: status-page
+          image: "{{ .Values.statusPage.image.repository }}:{{ .Values.statusPage.image.tag }}"
+          imagePullPolicy: {{ .Values.statusPage.image.pullPolicy }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "openstatus.configName" . }}
+            - secretRef:
+                name: {{ include "openstatus.secretName" . }}
+          env:
+            - name: AUTH_TRUST_HOST
+              value: "true"
+            - name: HOSTNAME
+              value: 0.0.0.0
+            - name: PORT
+              value: {{ .Values.statusPage.service.port | quote }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.statusPage.service.port }}
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 45
+            periodSeconds: 15
+            timeoutSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 60
+            periodSeconds: 20
+            timeoutSeconds: 10
+            failureThreshold: 3
+          resources:
+            {{- toYaml .Values.statusPage.resources | nindent 12 }}
+{{- end }}

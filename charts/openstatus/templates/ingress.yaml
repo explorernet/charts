@@ -1,0 +1,110 @@
+{{- if .Values.ingress.dashboard.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "openstatus.dashboardName" . }}
+  labels:
+    {{- include "openstatus.labels" . | nindent 4 }}
+    app.kubernetes.io/component: dashboard
+  {{- with .Values.ingress.dashboard.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if .Values.ingress.dashboard.className }}
+  ingressClassName: {{ .Values.ingress.dashboard.className }}
+  {{- end }}
+  rules:
+    {{- range .Values.ingress.dashboard.hosts }}
+    - host: {{ .host | quote }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "openstatus.dashboardName" $ }}
+                port:
+                  number: {{ $.Values.dashboard.service.port }}
+    {{- end }}
+  tls:
+    {{- range .Values.ingress.dashboard.hosts }}
+    - hosts:
+        - {{ .host | quote }}
+      secretName: {{ .tlsSecretName }}
+    {{- end }}
+{{- end }}
+{{- if .Values.ingress.statusPage.enabled }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "openstatus.statusPageName" . }}
+  labels:
+    {{- include "openstatus.labels" . | nindent 4 }}
+    app.kubernetes.io/component: status-page
+  {{- with .Values.ingress.statusPage.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if .Values.ingress.statusPage.className }}
+  ingressClassName: {{ .Values.ingress.statusPage.className }}
+  {{- end }}
+  rules:
+    {{- range .Values.ingress.statusPage.hosts }}
+    - host: {{ .host | quote }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "openstatus.statusPageName" $ }}
+                port:
+                  number: {{ $.Values.statusPage.service.port }}
+    {{- end }}
+  tls:
+    {{- range .Values.ingress.statusPage.hosts }}
+    - hosts:
+        - {{ .host | quote }}
+      secretName: {{ .tlsSecretName }}
+    {{- end }}
+{{- end }}
+{{- if .Values.privateLocation.ingress.enabled }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "openstatus.privateLocationName" . }}
+  labels:
+    {{- include "openstatus.labels" . | nindent 4 }}
+    app.kubernetes.io/component: private-location
+  {{- with .Values.privateLocation.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if .Values.privateLocation.ingress.className }}
+  ingressClassName: {{ .Values.privateLocation.ingress.className }}
+  {{- end }}
+  rules:
+    {{- range .Values.privateLocation.ingress.hosts }}
+    - host: {{ .host | quote }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "openstatus.privateLocationName" $ }}
+                port:
+                  number: {{ $.Values.privateLocation.service.port }}
+    {{- end }}
+  tls:
+    {{- range .Values.privateLocation.ingress.hosts }}
+    - hosts:
+        - {{ .host | quote }}
+      secretName: {{ .tlsSecretName }}
+    {{- end }}
+{{- end }}

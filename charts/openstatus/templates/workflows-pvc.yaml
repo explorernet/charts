@@ -1,0 +1,17 @@
+{{- if and .Values.workflows.enabled .Values.workflows.persistence.enabled (not .Values.workflows.persistence.existingClaim) }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "openstatus.workflowsPvcName" . }}
+  labels:
+    {{- include "openstatus.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    {{- toYaml .Values.workflows.persistence.accessModes | nindent 4 }}
+  resources:
+    requests:
+      storage: {{ .Values.workflows.persistence.size }}
+  {{- if .Values.workflows.persistence.storageClassName }}
+  storageClassName: {{ .Values.workflows.persistence.storageClassName }}
+  {{- end }}
+{{- end }}
